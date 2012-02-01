@@ -1,7 +1,7 @@
 #!/bin/bash
 #############################################################################
 # sysbackup
-# Last Modified: Tue 31 Jan 2012 09:02:50 PM MST by jbeard
+# Last Modified: Wed 01 Feb 2012 03:08:29 PM MST by jbeard
 # 
 # Fairly simple backup script, using rsync
 # TODO:
@@ -319,9 +319,12 @@ for data in "${data_locs[@]}"; do
 			cd $bk_path/$relative
 			mv $today.inprogress $today
 			rm -f Latest;ln -s $today Latest
+
+			# Update the time so the find routine will work right
+			touch $today
 	else
-		[ $verbose -eq 1 ] && log_print "Executing: ssh $ssh_args $bk_user@$bk_host \"mv $bk_path/$today.inprogress $bk_path/$relative/$today;cd $bk_path/$relative;rm -f Latest;ln -s $today Latest\"\n"
-		ssh $ssh_args $bk_user@$bk_host "mv $bk_path/$relative/$today.inprogress $bk_path/$relative/$today;cd $bk_path/$relative;rm -f Latest;ln -s $today Latest;"
+		[ $verbose -eq 1 ] && log_print "Executing: ssh $ssh_args $bk_user@$bk_host \"mv $bk_path/$today.inprogress $bk_path/$relative/$today;cd $bk_path/$relative;rm -f Latest;ln -s $today Latest;touch $today\"\n"
+		ssh $ssh_args $bk_user@$bk_host "mv $bk_path/$relative/$today.inprogress $bk_path/$relative/$today;cd $bk_path/$relative;rm -f Latest;ln -s $today Latest;touch $today"
 	fi
 
 done
