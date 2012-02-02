@@ -1,7 +1,7 @@
 #!/bin/bash
 #############################################################################
 # sysbackup
-# Last Modified: Wed 01 Feb 2012 03:08:29 PM MST by jbeard
+# Last Modified: Wed 01 Feb 2012 05:58:28 PM MST by jbeard
 # 
 # Fairly simple backup script, using rsync
 # TODO:
@@ -169,13 +169,13 @@ function my_trap() {
 
 function log() {
 	if [ ! -z "${log_file}" ]; then
-		printf "$(date ${log_date_fmt})$1" >> "${log_file}"
+		printf "$(date "${log_date_fmt}")$1" >> "${log_file}"
 	fi
 }
 
 function log_print() {
 	log "$1"
-	printf "-> $1"
+	printf "> $1"
 }
 
 
