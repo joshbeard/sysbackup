@@ -1,0 +1,7 @@
+# Example filter file
+# See the rsync man page and look at --include-from
+- /dev
+- /proc
+- /entropy
+- /media
+- /mnt

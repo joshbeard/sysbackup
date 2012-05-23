@@ -26,4 +26,12 @@ and for users to easily browse the backups to drag/drop their data.
 
 This was a quick hack to get a job done and is, in no way, perfect.
 
+I've tested this on Linux (Ubuntu/Debian), FreeBSD, and Mac OS X 10.6
+
+Notes for FreeBSD/ZFS NFSv4 ACLs
+	- These don't seem to transfer. rsync?
+
+Notes for Mac OS X:
+	- The version of rsync bundled with <10.6 is pretty old and missing a lot of options.
+	- Look for a more recent version (even as a client)
 

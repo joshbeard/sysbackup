@@ -1,0 +1,4 @@
+2012-05-22:
+	* Option to e-mail only on failure
+	* Make it possible to backup root (/)
+	* Fixed line breaks in logging and e-mail
