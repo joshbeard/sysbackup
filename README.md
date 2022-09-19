@@ -36,7 +36,8 @@ Arguments:
 ## Use Case
 
 Usable for a simple single directory as a regular user, full filesystems as
-root, and everything in between. Multiple configurations are supported.
+root, and everything in between. Multiple configurations are supported. Simple BASH (not regular Bourne (sh)) script with minimal
+dependencies (rsync, ssh).
 
 Create incremental backups that match the source data's directory hierarchy.
 
