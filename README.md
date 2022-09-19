@@ -24,25 +24,25 @@ Create incremental backups that match the source data's directory hierarchy:
 Source data:
 
 ```plain
-	homes/
-		- dept1/
-			- staff
-			- others
-		- dept2
-		- dept3
+  homes/
+    - dept1/
+      - staff
+      - others
+    - dept2
+    - dept3
 ```
 
 Backup Data:
 
 ```plain
-	/data/backups/homes/
-		- dept1
-			- 2012-01-31
-			- 2012-01-30
-			- 2012-01-29
-			- Latest -> 2012-01-31
-		-dept2
-			....
+  /data/backups/homes/
+    - dept1
+      - 2012-01-31
+      - 2012-01-30
+      - 2012-01-29
+      - Latest -> 2012-01-31
+    -dept2
+      ....
 ```
 
 This allows sharing the backup data using standard sharing protocols (AFP, SMB, NFS)
@@ -53,9 +53,11 @@ This uses [hard links](https://en.wikipedia.org/wiki/Hard_link) to reduce data d
 ## Notes
 
 Notes for ZFS NFSv4 ACLs
-	- These don't seem to transfer. rsync?
+
+* These don't seem to transfer. rsync?
 
 Notes for Mac OS X:
-	- The version of rsync bundled with <10.6 is pretty old and missing a lot of options.
-	- Look for a more recent version (even as a client)
+
+* The version of rsync bundled with <10.6 is pretty old and missing a lot of options.
+* Look for a more recent version (even as a client)
 
