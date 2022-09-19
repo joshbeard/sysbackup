@@ -1,113 +1,32 @@
 #!/bin/bash
 #############################################################################
 # sysbackup
-# Last Modified: Tue 22 May 2012 10:11:09 PM MDT by jbeard
 #
 # Fairly simple backup script, using rsync
-# TODO:
-#	* Trackdown an issue where empty backups are created if connectivity is lost(?)
-#		* I think this happens if the remote data is unavailable or if we don't have
-#		* permission
-#	* Use logger for logging
-#	* Port to pure Bourne shell (sh)
-#	* Add sanity checks
-#	* Somehow check the real size of the backup before running
-#	* Add argument parsing
+#
+# Refer to the 'example.conf' provided for an example config file and pass
+# it to 'sysbackup.sh' using the '-c' or '--config' argument.
 #############################################################################
 
 # Set the trap early
 trap my_trap INT
 
-# Address of the host to backup to/from
-bk_host="192.168.1.120"
-
-# Remote user
-# If pulling, this user should have read rights to the data being pulled
-# If pushing, beware that ownership and ACLs won't be preserved (unless
-#   remote user is root [bad idea])
-bk_user="remoteuser"
-
-# Path to backup to (local or remote)
-bk_path="/data/backups"
-
-# Path to SSH key to use
-ssh_key="/home/sysbackup/.ssh/id_rsa"
-
-# Arguments to pass to SSH (also used in the rsync command)
-ssh_args="-F /home/sysbackup/.ssh/config -q -i $ssh_key"
-
-### Rsync Options ###
-# Don't pass the (-e) here, as it will be added below
-# The following is an example of specifying the rsync path on the remote machine
-#rsync_args="-avzXA --progress --stats --rsync-path=\"/usr/bin/sudo /usr/bin/rsync\""
-rsync_args="-avXA --progress --stats"
-# The path to the rsync binary on this machine
-rsync_bin="/usr/bin/rsync"
-# The full path to an optional filter file
-rsync_filter="/etc/sysbackup/filter.txt"
-
-# 0 = pull from the remote host
-# 1 = push to the remote host
-backup_method=0
-
-# Check if the host is up via ICMP (ping 3 times)
-check_if_up=1
-
-# Log file. Leave empty to disable
-log_file="/var/log/sysbackup.log"
-log_date_fmt="+%F %T: "
-
-# E-mail report
-# Leave empty to disable
-mail_to="me@mydomain.tld"
-mail_only_errors=1
-
-# Verbose shows what commands are being executed
-verbose=1
-
-# Array of paths to backup
-# You can use "/" to backup the entire system
-# If you choose "/", the backup name will be $bk_host.root
-data_locs=(
-"/svr/important_data"
-"/etc"
-"/home"
-)
-
-
-# Maximum age (in days) to keep backups
-max_age=20
-
-# Have at least this much free space before backing up (in megabytes)
-min_free_space=1024 # in MegaBytes
-
-# Format for date (the backups are named with this. See man date)
-date_fmt="+%Y-%m-%d-%H-%M"
-
-# Full path to a PID file we can use
-pid_file="/tmp/backups.pid"
-
-# Should we try to calculate free space on the destination before backing up?
-# This doesn't work that well, and does take time to calculate.
-# It requires SSH access to check the remote system's available space
-# You'll also need to specify a backup_file_list so we can determine the backup size from that
-calculate_free_space=1
-#backup_file_list=$(mktemp /tmp/backup.$(date $date_fmt).XXX || exit 1)
-#free_padding=200
-
-i_have_configured=0
-
-#############################################################################
-# END OF CONFIGURATION
-#############################################################################
-
 case "$1" in
   -c|--config)
-    echo "config file is set: $2"
     config_file=$2
   ;;
 esac
 
+function usage() {
+  echo "Usage: $0 -c|--config CONFIG_FILE"
+  echo
+  echo "Arguments:"
+  echo "  -c, --config    Path to a config file."
+  echo "                  This can also be set using the SYSBACKUP_CONFIG environment variable."
+  echo
+}
+
+# Load config file
 if [ ! -z "$config_file" ]; then
 	if [ -e "$config_file" ]; then
 		if ! source "$config_file"; then
@@ -116,11 +35,15 @@ if [ ! -z "$config_file" ]; then
 			quit 1
 		fi
 	else
-		err="FAILURE: config_file is set, but $config_file doesn't exist.\n"
-		log_print "$err" ; send_email "$err"
-		quit 1
+		echo "FAILURE: config_file is set, but $config_file doesn't exist."
+		exit 1
 	fi
+else
+  echo "FAILURE: a config file must be set."
+  usage
+  exit 1
 fi
+
 
 #############################################################################
 # Functions
@@ -227,7 +150,6 @@ ver="2012-05-22"
 #############################################################################
 # Start the program
 #############################################################################
-
 
 # Check if we're already running
 if [ -e "$pid_file" ]; then
