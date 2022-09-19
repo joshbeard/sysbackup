@@ -17,10 +17,6 @@ case "$1" in
   ;;
 esac
 
-# Helper values
-today="$(date $date_fmt)"
-ver="2022-09-19"
-
 function usage() {
   echo "Usage: $0 -c|--config CONFIG_FILE"
   echo
@@ -143,6 +139,9 @@ function my_trap() {
   exit 255
 }
 
+# Helper values
+today="$(date $date_fmt)"
+ver="2022-09-19"
 
 #############################################################################
 # Start the program
@@ -296,7 +295,7 @@ for data in "${data_locs[@]}"; do
     msg="${msg}Executing: ssh $ssh_args $bk_user@$bk_host \"find $bk_path/$relative -maxdepth 1 -mtime +$max_age -exec echo 'Removing {}' \; -exec rm -rf {} \;\"\n"
     [ $verbose -eq 1 ] && log_print "$msg" ; add_email "$msg"
     ssh $ssh_args $bk_user@$bk_host "[ -e \"$bk_path/$relative\" ] && find $bk_path/$relative -maxdepth 1 -mtime +$max_age -exec echo 'Removing {}' \; -exec rm -rf {} \; || mkdir -p \"$bk_path/$relative\""
-    rsync_string="${data}/. ${bk_host}:${bk_path}/$relative/${today}.inprogress"
+    rsync_string="${data}/. ${bk_user}@${bk_host}:${bk_path}/$relative/${today}.inprogress"
   fi
 
   msg="Backing up ${data}\n"
