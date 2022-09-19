@@ -2,7 +2,7 @@
 #############################################################################
 # sysbackup
 # Last Modified: Tue 22 May 2012 10:11:09 PM MDT by jbeard
-# 
+#
 # Fairly simple backup script, using rsync
 # TODO:
 #	* Trackdown an issue where empty backups are created if connectivity is lost(?)
@@ -17,9 +17,6 @@
 
 # Set the trap early
 trap my_trap INT
-
-# Full path to a config file. If blank, we'll use the options below
-config_file=""
 
 # Address of the host to backup to/from
 bk_host="192.168.1.120"
@@ -71,7 +68,7 @@ verbose=1
 # Array of paths to backup
 # You can use "/" to backup the entire system
 # If you choose "/", the backup name will be $bk_host.root
-data_locs=( 
+data_locs=(
 "/svr/important_data"
 "/etc"
 "/home"
@@ -104,6 +101,12 @@ i_have_configured=0
 # END OF CONFIGURATION
 #############################################################################
 
+case "$1" in
+  -c|--config)
+    echo "config file is set: $2"
+    config_file=$2
+  ;;
+esac
 
 if [ ! -z "$config_file" ]; then
 	if [ -e "$config_file" ]; then
@@ -123,6 +126,18 @@ fi
 # Functions
 #############################################################################
 
+function log() {
+	if [ ! -z "${log_file}" ]; then
+		printf "$(date "${log_date_fmt}")$1" >> "${log_file}"
+	fi
+}
+
+
+function log_print() {
+	log "$1"
+	printf "> $1"
+}
+
 function send_email() {
 
 	okaytomail=0
@@ -136,7 +151,7 @@ function send_email() {
 	#if [ "$mail_only_errors" -ne 1 ] || [ [ "$mail_only_errors" -eq 1 ] && [ ! -z "$3" ] && [ "$3" == "err" ] ]; then
 	if [ "$okaytomail" -eq 1 ]; then
 		[ ! -z "$2" ] && subject="$2" || subject=""
-		
+
 		if [ ! -z "$mail_to" ]; then
 			message="$1\n\n--\nsysbackup running on $(hostname)\n"
 			printf "$message" | mail -s "$(hostname) backup report ${subject}" $mail_to
@@ -191,7 +206,7 @@ function quit() {
 	else
 		log_print "OOPS: ${pid_file} is missing!\n"
 	fi
-	
+
 	exit $1
 }
 
@@ -200,17 +215,6 @@ function my_trap() {
 	[ -e "$pid_file" ] && (rm -f "$pid_file" && log_print "Okay" || log_print "Failed to remove ${pid_file}") || log_print "OOPS: ${pid_file} is missing"
 	log_print "\n"
 	exit 255
-}
-
-function log() {
-	if [ ! -z "${log_file}" ]; then
-		printf "$(date "${log_date_fmt}")$1" >> "${log_file}"
-	fi
-}
-
-function log_print() {
-	log "$1"
-	printf "> $1"
 }
 
 
@@ -292,13 +296,13 @@ if [ "$calculate_free_space" -eq 1 ]; then
 	fi
 
 	if [ $backup_method -eq 0 ]; then
-		free_space=$(df -kP $bk_path|tail -1|awk '{print $4}')	
-	else 
+		free_space=$(df -kP $bk_path|tail -1|awk '{print $4}')
+	else
 		free_space=$(ssh $ssh_args $bk_user@$bk_host "df -kP $bk_path|tail -1|awk '{print \$4}'")
 	fi
 
 	msg=" => Free space: $free_space KB ($(human_readable $free_space))\n"
-	msg="$msg => Minimum required free space: $min_free_space KB ($(human_readable $min_free_space))\n"	
+	msg="$msg => Minimum required free space: $min_free_space KB ($(human_readable $min_free_space))\n"
 	log_print "$msg" ; add_email "$msg"
 
 	if [ "$min_free_space" -ge "$free_space" ]; then
@@ -368,7 +372,7 @@ for data in "${data_locs[@]}"; do
 
 		rsync_string="${rsync_string} ${bk_path}/$relative/${today}.inprogress"
 
-	else 
+	else
 		msg="Removing backups older than $max_age\n"
 		msg="${msg}Executing: ssh $ssh_args $bk_user@$bk_host \"find $bk_path/$relative -maxdepth 1 -mtime +$max_age -exec echo 'Removing {}' \; -exec rm -rf {} \;\"\n"
 		[ $verbose -eq 1 ] && log_print "$msg" ; add_email "$msg"
@@ -404,7 +408,7 @@ for data in "${data_locs[@]}"; do
 
 done
 
-msg="==> Completed\n" 
+msg="==> Completed\n"
 log_print "$msg"
 add_email "$msg"
 
