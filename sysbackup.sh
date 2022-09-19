@@ -11,18 +11,26 @@
 # Set the trap early
 trap my_trap INT
 
-case "$1" in
-  -c|--config)
-    config_file=$2
-  ;;
-esac
+# Lazy arg parser
+for arg in $@; do
+  case "$1" in
+    -c|--config)
+      config_file=$2
+      shift 2
+    ;;
+    -f|--filter)
+      rsync_filter=$2
+      shift 2
+    ;;
+  esac
+done
 
 function usage() {
-  echo "Usage: $0 -c|--config CONFIG_FILE"
+  echo "Usage: $0 -c|--config CONFIG_FILE [-f|--filter RSYNC_FILTER_FILE]"
   echo
   echo "Arguments:"
   echo "  -c, --config    Path to a config file."
-  echo "                  This can also be set using the SYSBACKUP_CONFIG environment variable."
+  echo "  -f, --filter    Path to an rsync filter file."
   echo
 }
 

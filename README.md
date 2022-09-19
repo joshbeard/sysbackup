@@ -5,21 +5,40 @@ A simple shell script that uses `rsync` to perform backups.
 This was a quick hack to get a job done and there's probably a "real" tool out there that other people would prefer or their own scripts
 around _rsync_.
 
-I've tested this on Linux (Ubuntu/Debian), FreeBSD, and macOS.
+I've tested this on Linux, FreeBSD, and macOS. It depends on `rsync` and `ssh`.
 
 This script was created in 2011 and has been dormant since. It still works in $CURRENT_YEAR, though.
 
 ## Usage
 
+### Setup
+
 1. Copy the [`example.conf`](example.conf) to a new file and adjust the settings.
 2. Copy the [`filter.txt`](filter.txt) to a new file and adjust as needed.
-3. Run `sysbackup.sh --config <path/to/config>` interactively or via cron.
 
+### Running
+
+Run `sysbackup.sh --config <path/to/config>` interactively or via cron.
 SSH authentication is used. Ensure the private key is unlocked when the script runs.
+
+```shell
+sysbackup.sh --config /path/to/config.conf
+```
+
+```plain
+Usage: ./sysbackup.sh -c|--config CONFIG_FILE [-f|--filter RSYNC_FILTER_FILE]
+
+Arguments:
+  -c, --config    Path to a config file.
+  -f, --filter    Path to an rsync filter file.
+```
 
 ## Use Case
 
-Create incremental backups that match the source data's directory hierarchy:
+Usable for a simple single directory as a regular user, full filesystems as
+root, and everything in between. Multiple configurations are supported.
+
+Create incremental backups that match the source data's directory hierarchy.
 
 Source data:
 
