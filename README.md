@@ -1,13 +1,14 @@
 # sysbackup
 
-A simple shell script that uses `rsync` to perform backups.
+A simple Bash shell script that uses `rsync` to perform backups.
 
-This was a quick hack to get a job done and there's probably a "real" tool out there that other people would prefer or their own scripts
-around _rsync_.
+It's usable for a single directory as a regular user, full filesystems as root, and everything in between. Multiple configurations are
+supported.
 
-I've tested this on Linux, FreeBSD, and macOS. It depends on `rsync` and `ssh`.
+This was a quick hack I wrote over 12 years ago to get a job done. There's probably a "real" tool out there or personal scripts that other
+people would prefer.
 
-This script was created in 2011 and has been dormant since. It still works in $CURRENT_YEAR, though.
+I've used this extensively on Linux, FreeBSD, and macOS. It depends on `rsync` and `ssh` and uses [hard links](https://en.wikipedia.org/wiki/Hard_link) to reduce data duplication.
 
 ## Usage
 
@@ -15,6 +16,17 @@ This script was created in 2011 and has been dormant since. It still works in $C
 
 1. Copy the [`example.conf`](example.conf) to a new file and adjust the settings.
 2. Copy the [`filter.txt`](filter.txt) to a new file and adjust as needed.
+
+### Example Installation
+
+```shell
+git clone https://github.com/joshbeard/sysbackup.git ~/.local/sysbackup
+mkdir ~/.config/sysbackup
+cp ~/.local/sysbackup/example.conf ~/.config/sysbackup/foo.conf
+cp ~/.local/sysbackup/filter.txt ~/.config/sysbackup/foo.filter.txt
+```
+
+Edit `~/.config/sysbackup/foo.conf` and optionally create a scheduled job (cron, systemctl, launchd, etc) to run it.
 
 ### Running
 
@@ -33,13 +45,9 @@ Arguments:
   -f, --filter    Path to an rsync filter file.
 ```
 
-## Use Case
+## Filesystem Structure
 
-Usable for a simple single directory as a regular user, full filesystems as
-root, and everything in between. Multiple configurations are supported. Simple BASH (not regular Bourne (sh)) script with minimal
-dependencies (rsync, ssh).
-
-Create incremental backups that match the source data's directory hierarchy.
+The script creates incremental backups that match the source data's directory hierarchy.
 
 Source data:
 
@@ -65,10 +73,6 @@ Backup Data:
       ....
 ```
 
-This allows sharing the backup data using standard sharing protocols (AFP, SMB, NFS)
-and for users to easily browse the backups to drag/drop their data.
-
-This uses [hard links](https://en.wikipedia.org/wiki/Hard_link) to reduce data duplication.
 
 ## Notes
 
