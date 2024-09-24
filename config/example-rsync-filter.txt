@@ -1,7 +1,4 @@
 # Example filter file
 # See the rsync man page and look at --include-from
-- /dev
-- /proc
-- /entropy
-- /media
-- /mnt
+- /ignore/this/directory
++ /ignore/this/directory/this-file.txt

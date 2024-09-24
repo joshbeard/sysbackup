@@ -1,0 +1,49 @@
+version: 2
+project_name: sysbackup
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - id: "sysbackup"
+    env:
+      - CGO_ENABLED=0
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    flags:
+      - -trimpath
+    ldflags:
+      - "-s -w -X main.version={{.Version}} -X main.commit={{.ShortCommit}} -X main.date={{.Date}}"
+    goos:
+      - linux
+      - darwin
+      - freebsd
+    goarch:
+      - amd64
+      - arm64
+    main: .
+    binary: sysbackup
+archives:
+  - id: "tarball"
+    builds:
+      - "sysbackup"
+    format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+    files: []
+    #   - src: LICENSE
+    #   - src: README.md
+snapshot:
+  name_template: "{{ .Tag }}-next"
+checksum:
+  name_template: 'checksums.txt'
+signs:
+  - artifacts: all
+    args:
+      - "--batch"
+      - "--local-user"
+      - "{{ .Env.GPG_FINGERPRINT }}"
+      - "--output"
+      - "${signature}"
+      - "--detach-sign"
+      - "${artifact}"

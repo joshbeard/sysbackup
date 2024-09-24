@@ -1,0 +1,47 @@
+# ------------------------------------------------------------------------------
+# sysbackup configuration file
+#
+# All config options can also be passed as flags or environment variables.
+# ------------------------------------------------------------------------------
+
+# source and target can be any combination of rsync paths - local or remote.
+# These can also be passed as flags or positional arguments to sysbackup.
+source: ""
+target: ""
+
+# path to an rsync filter file (alternatively set in rsync_args)
+filter_file: ""
+
+# path to this instance's pid file. Use a unique path if multiple instances are
+# intended to run simultaneously.
+pid_file: /run/sysbackup.pid
+
+# custom rsync arguments that are in addition to the default arguments
+rsync_args: ""
+
+# number of backups to keep
+max_backups: 0
+
+# automatically delete inprogress directories that are orphaned
+delete_stale_inprogress_dirs: false
+
+# check free space on the target before starting a backup
+check_free_space: false
+
+# estimate the size of the backup before starting using rsync --dry-run
+# note: this can be slow for large backups
+estimate_backup_size: false
+
+# minimum free space in megabytes to leave on the target
+min_free_space: 0
+
+# create the base target directory if it does not exist
+create_target: true
+
+# log_level can be debug, info, warning, error, or critical
+log_level: info
+
+# log_rsync enables capturing rsync output to the log
+# alternatively, set '--log-file' in rsync_args to log rsync output to a file
+# directly from rsync
+log_rsync: false

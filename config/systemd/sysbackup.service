@@ -1,0 +1,6 @@
+[Unit]
+Description=Sysbackup Service
+
+[Service]
+ExecStart=/path/to/sysbackup --config /path/to/config /path/to/source /path/to/target
+StandardError=syslog

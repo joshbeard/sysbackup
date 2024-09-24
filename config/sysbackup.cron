@@ -1,0 +1,1 @@
+0 0 * * * /path/to/sysbackup /path/to/source /path/to/destination | logger -t sysbackup
