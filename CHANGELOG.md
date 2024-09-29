@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0 - 2024-09-29
+
+- Rewrite in Go @joshbeard (#1)
+
 ## 0.0.1 - 2012-05-22
 
 * Option to e-mail only on failure
