@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>dev.jbeard.sysbackup</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/path/to/sysbackup</string>
+        <string>--config</string>
+        <string>/path/to/config</string>
+        <string>/path/to/source</string>
+        <string>/path/to/target</string>
+    </array>
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>21</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+    <key>StandardErrorPath</key>
+    <string>/var/log/sysbackup.err</string>
+</dict>
+</plist>

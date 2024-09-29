@@ -1,0 +1,96 @@
+#!/bin/sh
+PROG_NAME="sysbackup"
+BIN_NAME="sysbackup"
+REPO="joshbeard/sysbackup"
+
+# Default install directory
+INSTALL_DIR="${INSTALL_DIR:-$HOME/bin}"
+
+# Parse arguments
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -d|--dir)
+      INSTALL_DIR="$2"
+      shift 2
+      ;;
+    *)
+      echo "Unknown parameter passed: $1"
+      exit 1
+      ;;
+  esac
+done
+
+# Create install directory if it doesn't exist
+mkdir -p "$INSTALL_DIR"
+
+# Determine platform and architecture
+OS="$(uname | tr '[:upper:]' '[:lower:]')"
+ARCH="$(uname -m)"
+case "$ARCH" in
+  x86_64)
+    ARCH="amd64"
+    ;;
+  aarch64|arm64)
+    ARCH="arm64"
+    ;;
+  armv6*|armv7*)
+    ARCH="arm"
+    ;;
+  *)
+    echo "Unsupported architecture: $ARCH"
+    exit 1
+    ;;
+esac
+
+# Determine the latest version
+LATEST_TAG=$(curl -s https://api.github.com/repos/${REPO}/releases/latest | grep 'tag_name' | cut -d\" -f4)
+if [ -z "$LATEST_TAG" ]; then
+  echo "Unable to determine the latest release."
+  exit 1
+fi
+
+# Download the package
+PACKAGE_URL="https://github.com/${REPO}/releases/download/$LATEST_TAG/${PROG_NAME}_${LATEST_TAG}_${OS}_${ARCH}.tar.gz"
+CHECKSUMS_URL="https://github.com/${REPO}/releases/download/$LATEST_TAG/checksums.txt"
+
+curl -sLO "$PACKAGE_URL"
+curl -sLO "$CHECKSUMS_URL"
+
+# Verify checksum
+PACKAGE_FILE="${PROG_NAME}_${LATEST_TAG}_${OS}_${ARCH}.tar.gz"
+CHECKSUM=$(grep "$PACKAGE_FILE" checksums.txt | awk '{print $1}')
+
+# Detect the operating system and set the appropriate checksum command
+OS_TYPE=$(uname)
+case "$OS_TYPE" in
+  Darwin)
+    checksum_cmd="shasum -a 256"
+    ;;
+  Linux)
+    checksum_cmd="sha256sum"
+    ;;
+  FreeBSD | OpenBSD)
+    checksum_cmd="sha256"
+    ;;
+  *)
+    echo "Unsupported OS: $OS_TYPE"
+    exit 1
+    ;;
+esac
+
+# Verify the checksum
+if ! echo "$CHECKSUM  $PACKAGE_FILE" | $checksum_cmd -c -; then
+  echo "Checksum verification failed."
+  exit 1
+fi
+
+# Extract the package
+tar -xzf "$PACKAGE_FILE"
+
+# Move the binary to the install directory
+mv $BIN_NAME "$INSTALL_DIR"
+
+# Clean up
+rm "$PACKAGE_FILE" checksums.txt
+
+echo "$PROG_NAME has been installed to $INSTALL_DIR"
