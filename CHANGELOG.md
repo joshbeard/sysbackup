@@ -1,15 +1,13 @@
-2022-09-19:
+# Changelog
 
-* Moved default config out of script and into "external.conf" file.
-* Added '-c | --config' argument to specify a config file.
-* Updated README - converted to Markdown, updated contents.
-
-2012-05-22:
+## 0.0.1 - 2012-05-22
 
 * Option to e-mail only on failure
 * Make it possible to backup root (/)
 * Fixed line breaks in logging and e-mail
 
-## 0.1.0 - 2024-09-29
+## 0.0.2 - 2022-09-19:
 
-- Rewrite in Go @joshbeard (#1)
+* Moved default config out of script and into "external.conf" file.
+* Added '-c | --config' argument to specify a config file.
+* Updated README - converted to Markdown, updated contents.
