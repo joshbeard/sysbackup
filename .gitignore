@@ -1,2 +1,4 @@
-key.gpg
-dist
+/key.gpg
+/dist
+/coverage.txt
+/test
