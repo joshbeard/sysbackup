@@ -154,7 +154,7 @@ func (a App) cleanupStaleInprogressDirs() {
 		remoteHost, remotePath := parseRemotePath(a.cfg.Target)
 
 		// Find all remote in-progress directories
-		sshCmd := fmt.Sprintf(`ssh %s "find %s -type d -name '*.inprogress'"`, remoteHost, remotePath)
+		sshCmd := fmt.Sprintf(`ssh %s "find %s -type d -maxdepth 1 -name '*.inprogress.*'"`, remoteHost, remotePath)
 		output, err := runCmdGetOutputString(sshCmd)
 		if err != nil {
 			log.Error("Error finding in-progress directories on remote host", "err", err)
